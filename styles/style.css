@@ -46,3 +46,7 @@ section.cover span {
     color: white;
     font-weight: lighter;
 }
+
+#email {
+    bottom: 12%;
+}
