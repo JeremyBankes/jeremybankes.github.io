@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordifier</title>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>WORDIFIER</h1>
+        <span>A stupid project for generating stupid results</span>
+        <span>Replaces every word in a phrase with the longest word from the thesaurus.</span>
+    </header>
+
+    <form onsubmit="onFormSubmit(this); return false;">
+        <input type="text" name="phrase" id="phrase" value="An boring group of words">
+        <input type="submit" value="Wordify">
+    </form>
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Loading_2.gif" alt="Loadin..." id="loading">
+    <section id="display"></section>
+
+    <a id="github" href="https://github.com/JeremyBankes/Wordifier">View on GitHub</a>
+</body>
+
+</html>
