@@ -1,0 +1,51 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#mapOverlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000090;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+#mapOverlay > span {
+    color: white;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.leaflet-popup {
+    margin-bottom: 10px;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+}
+
+.leaflet-popup-content span {
+    display: block;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.leaflet-popup-tip-container {
+    display: none;
+}
