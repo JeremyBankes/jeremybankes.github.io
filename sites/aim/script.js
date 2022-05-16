@@ -4,7 +4,7 @@ class Game {
      * @param {HTMLCanvasElement} canvas 
      */
     constructor(canvas) {
-        this.canvas = document.getElementById('game');
+        this.canvas = canvas;
         this.context = canvas.getContext('2d');
 
         this.hitSound = new Audio('audio/hit.wav');
@@ -14,29 +14,34 @@ class Game {
         this.input = new Input(canvas);
         this.scoreboard = new Scoreboard();
 
-        const onCanvasResize = event => {
+        const onCanvasResize = () => {
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
         };
 
-        this.canvas.addEventListener('resize', onCanvasResize);
+        this.canvas.addEventListener('resize', () => onCanvasResize());
         onCanvasResize();
     }
 
     async start() {
         await this.initialize();
         let lastTime = performance.now();
-        const update = currentTime => {
+        const update = (/** @type {number} */ currentTime) => {
             this.update(this.context, (currentTime - lastTime) / 1000);
             lastTime = currentTime;
             requestAnimationFrame(update);
         };
-
         requestAnimationFrame(update);
     }
 
     setup() {
+        /**
+         * @type {Target[]}
+         */
         this.targets = [];
+        /**
+         * @type {any[]}
+         */
         this.particles = [];
 
         this.hits = 0;
@@ -65,7 +70,7 @@ class Game {
     async initialize() {
         this.setup();
 
-        const getDistance = (a, b) => {
+        const getDistance = (/** @type {number[]} */ a, /** @type {number[]} */ b) => {
             return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
         }
 
@@ -75,7 +80,7 @@ class Game {
             setTimeout(spawnCycle, this.spawnInterval);
         }
 
-        this.input.mouseEventListeners.push(event => {
+        this.input.mouseEventListeners.push((/** @type {Event} */ event) => {
             if (event.type === 'mousedown') {
                 if (this.restarting) {
                     if (this.playAgain) {
@@ -94,14 +99,18 @@ class Game {
 
                         const accuracy = 1 - (distance / target.radius);
 
+                        let points = 100 + (accuracy * accuracy * target.getProgress()) * 100;
+
                         if (accuracy > 0.95) {
-                            this.score += 100;
+                            points += 100;
                             this.bonus = 1;
                             this.lives++;
                         }
 
-                        this.score += (accuracy * accuracy * target.getProgress()) * 100;
+                        this.score += points;
                         this.hitSound.play();
+
+                        this.particles.push(new WordEffect([target.position[0], target.position[1] - 50], `+${points.toFixed(0)}`, 'white'));
 
                         hit = true;
                         target.removed = true;
@@ -112,7 +121,7 @@ class Game {
                 }
 
                 if (!hit) {
-                    this.score = Math.max(0, (this.score - 100) * 0.95);
+                    this.score = Math.max(0, this.score * 0.95);
                     this.missSound.play();
                     this.hurt = 1;
                     this.lives--;
@@ -129,7 +138,7 @@ class Game {
     update(context, deltaTime) {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.targets = this.targets.filter(target => {
+        this.targets = this.targets.filter((/** @type {{ removed: any; isAlive: () => any; pop: (arg0: any, arg1: boolean) => void; }} */ target) => {
             if (target.removed) {
                 if (!target.isAlive()) {
                     target.pop(this.particles, false);
@@ -144,10 +153,10 @@ class Game {
             }
         });
 
-        this.targets.forEach(target => target.update(context, this.restarting ? 0 : deltaTime));
+        this.targets.forEach((/** @type {{ update: (arg0: CanvasRenderingContext2D, arg1: number) => any; }} */ target) => target.update(context, this.restarting ? 0 : deltaTime));
 
-        this.particles = this.particles.filter(particle => particle.isAlive());
-        this.particles.forEach(particle => particle.update(context, deltaTime));
+        this.particles = this.particles.filter((/** @type {{ isAlive: () => any; }} */ particle) => particle.isAlive());
+        this.particles.forEach((/** @type {{ update: (arg0: CanvasRenderingContext2D, arg1: number) => any; }} */ particle) => particle.update(context, deltaTime));
 
         context.fillStyle = '#FFFFFF';
         context.font = '48px monospace';
@@ -216,17 +225,27 @@ class Scoreboard {
         }
     }
 
+    /**
+     * @param {number} score
+     */
     newScore(score) {
         this.scores.push(score);
         this.scores = this.scores.sort((a, b) => b - a).slice(0, this.size);
         document.cookie = 'scores=' + this.scores.join();
     }
 
+    /**
+     * @param {number} score
+     */
     isWorthy(score) {
         if (this.scores.length < this.size) return true;
         return score > this.scores[this.scores.length - 1];
     }
 
+    /**
+     * @param {CanvasRenderingContext2D} context
+     * @param {number} deltaTime
+     */
     update(context, deltaTime) {
         if (this.scores.length > 0) {
             context.textAlign = 'left';
@@ -235,7 +254,7 @@ class Scoreboard {
             context.fillText('Highscores', 10, 20);
             context.fillStyle = '#FFFFFF';
             this.scores.forEach((score, index) => {
-                context.fillText(Math.round(score), 18, 24 + 16 * (index + 1));
+                context.fillText(Math.round(score).toFixed(0), 18, 24 + 16 * (index + 1));
             });
         }
     }
@@ -251,17 +270,23 @@ class Input {
         this.cursorPosition = [0, 0];
         this.bounds = element.getBoundingClientRect();
         this.mouseEventListeners = [];
-
+        this.element = element;
         element.addEventListener('mousemove', event => this.onMouseEvent(event));
         element.addEventListener('mousedown', event => this.onMouseEvent(event));
         element.addEventListener('mouseup', event => this.onMouseEvent(event));
         element.addEventListener('resize', event => this.onResize(event));
     }
 
+    /**
+     * @param {Event} event
+     */
     onResize(event) {
-        this.bounds = element.getBoundingClientRect();
+        this.bounds = this.element.getBoundingClientRect();
     }
 
+    /**
+     * @param {MouseEvent} event
+     */
     onMouseEvent(event) {
         if (event.type === 'mousemove') {
             this.cursorPosition[0] = event.clientX - this.bounds.left;
@@ -289,6 +314,9 @@ class Target {
         this.removed = false;
     }
 
+    /**
+     * @param {(Particle | WordEffect)[]} particles
+     */
     pop(particles, good = true, accuracy = 0) {
         if (good) {
             for (let i = 0; i < 10; i++) {
@@ -328,7 +356,7 @@ class Target {
     update(context, deltaTime) {
         context.fillStyle = this.color = `hsl(${120 - this.age * 120 / this.lifetime}, ${deltaTime == 0 ? 50 : 75}%, 50%)`;
         context.beginPath();
-        context.arc(...this.position, this.radius, 0, Math.PI * 2, false);
+        context.arc(this.position[0], this.position[1], this.radius, 0, Math.PI * 2, false);
         context.fill();
         this.age += deltaTime;
         if (!this.isAlive()) this.removed = true;
@@ -342,6 +370,11 @@ class Target {
 
 class WordEffect {
 
+    /**
+     * @param {number[]} position
+     * @param {string} word
+     * @param {string} color
+     */
     constructor(position, word, color) {
         this.position = position;
         this.word = word;
@@ -382,6 +415,10 @@ class WordEffect {
 
 class Particle {
 
+    /**
+     * @param {number[]} position
+     * @param {string} color
+     */
     constructor(position, velocity = [0, 0], color) {
         this.position = position;
         this.velocity = velocity;
@@ -445,6 +482,7 @@ class Particle {
 }
 
 window.onload = () => {
-    const game = new Game(document.getElementById('game'));
+    const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('game'));
+    const game = new Game(canvas);
     game.start();
 };
