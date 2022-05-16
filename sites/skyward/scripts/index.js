@@ -11,16 +11,18 @@ function createMap() {
 
 async function getCanadianFlightData() {
     const allFlightData = await fetch(OPEN_SKY_API).then(response => response.json());
+    console.log(allFlightData.states[0]);
     const validatedFlightData = allFlightData.states.reduce((flights, flight) => {
-        if (flight[2] !== 'Canada' || !flight[5] || !flight[6]) return flights;
+        if (flight[9] < 260 || !flight[5] || !flight[6]) return flights;
         flights.push({
-            type: "Feature",
+            type: 'Feature',
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [flight[5], flight[6]]
             },
             properties: {
                 callSign: flight[1].trim(),
+                originCountry: flight[2],
                 velocity: flight[9],
                 trueTrack: flight[10]
             }
@@ -56,7 +58,8 @@ function drawFlightData(map, flights) {
         const marker = map.markers[flight.properties.callSign];
         marker.setRotationAngle(flight.properties.trueTrack);
         marker._popup.setContent(
-            `<span>Flight: <b>${flight.properties.callSign}</b></span><br>` +
+            `<span>Flight: <b>${flight.properties.callSign}</b></span>` +
+            `<span>Flying From: <b>${flight.properties.originCountry}</b></span><br>` +
             `<span>Longitude: ${flight.geometry.coordinates[1]}</<span>` +
             `<span>Latitude: ${flight.geometry.coordinates[0]}</span><br>` +
             `<span>Speed: ${flight.properties.velocity}m/s</span>`
@@ -110,7 +113,7 @@ async function onLoad() {
     setInterval(() => {
         if (overlay.style.visibility !== 'hidden') {
             const unix = Math.floor(Date.now() / 500);
-            const ellipses = "...".substr(0, unix % 3 + 1);
+            const ellipses = '...'.substr(0, unix % 3 + 1);
             overlay.lastElementChild.innerText = original.replace(/\.+/, ellipses);
         } else {
             animateFlightData(map, flightData);
