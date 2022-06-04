@@ -1,0 +1,33 @@
+{
+    "name": "jeremybankes.github.io",
+    "version": "1.0.0",
+    "description": "Jeremy's personal portfolio",
+    "main": "index.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "build": "rollup --config rollup.config.js",
+        "develop": "nodemon --exec \"npm run build\" --ignore \"docs/scripts/main.js\" --ext \"*\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JeremyBankes/jeremybankes.github.io.git"
+    },
+    "keywords": [
+        "Jeremy",
+        "Bankes"
+    ],
+    "author": "Jeremy Bankes",
+    "license": "UNLICENSED",
+    "bugs": {
+        "url": "https://github.com/JeremyBankes/jeremybankes.github.io/issues"
+    },
+    "homepage": "https://github.com/JeremyBankes/jeremybankes.github.io#readme",
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^22.0.0",
+        "@rollup/plugin-node-resolve": "^13.3.0",
+        "rollup": "^2.75.5",
+        "three": "^0.141.0"
+    }
+}
