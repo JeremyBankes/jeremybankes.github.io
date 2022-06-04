@@ -30631,11 +30631,36 @@ function animate() {
 }
 animate();
 
+const textCanvas = /** @type {HTMLCanvasElement} */ (document.getElementById('textCanvas'));
+
+function updateText() {
+    textCanvas.width = textCanvas.clientWidth;
+    textCanvas.height = textCanvas.clientHeight;
+    const context = textCanvas.getContext('2d');
+    context.clearRect(0, 0, textCanvas.width, textCanvas.height);
+
+    context.fillStyle = 'white';
+    context.font = '24px monospace';
+
+    context.save();
+    context.filter = 'blur(8px)';
+    context.fillText('jeremy.bankes' + '@gmail.com', 10, textCanvas.height - 50);
+    context.fillText('https://github.com/JeremyBankes', 10, textCanvas.height - 10);
+
+    context.restore();
+    context.fillText('jeremy.bankes' + '@gmail.com', 10, textCanvas.height - 50);
+    context.fillText('https://github.com/JeremyBankes', 10, textCanvas.height - 10);
+}
+
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     renderer.setSize(window.innerWidth, window.innerHeight);
     bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+    textCanvas.width = textCanvas.clientWidth;
+    textCanvas.height = textCanvas.clientHeight;
     camera.updateProjectionMatrix();
+    updateText();
 });
 
+updateText();
 document.body.appendChild(renderer.domElement);
