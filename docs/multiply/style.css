@@ -1,0 +1,108 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    font-size: larger;
+    border: 0;
+    border-radius: 0;
+    font-weight: bolder;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#banner {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+}
+
+#displaySection {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#display {
+    font-size: 4rem;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+}
+
+#numberInput {
+    display: block;
+    width: 100%;
+    font-size: 3rem;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    text-align: center;
+    font-weight: bolder;
+}
+
+#buttonSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#buttonSection button {
+    font-size: 2rem;
+    height: 10vh;
+}
+
+.correctAnimation {
+    animation-name: correct;
+    animation-duration: 800ms;
+}
+
+.incorrectAnimation {
+    animation-name: incorrect;
+    animation-duration: 400ms;
+}
+
+@keyframes correct {
+    0% {
+        color: green;
+    }
+
+    100% {
+        color: white;
+    }
+}
+
+@keyframes incorrect {
+    0% {
+        color: red;
+    }
+
+    25% {
+        transform: translateX(-1rem);
+    }
+
+    50% {
+        transform: translateX(1rem);
+    }
+
+    75% {
+        transform: translateX(-1rem);
+        color: red;
+    }
+
+    100% {
+        color: white;
+    }
+}
