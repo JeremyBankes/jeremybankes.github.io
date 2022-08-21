@@ -36,7 +36,7 @@ function onLoad() {
     state.display = /** @type {HTMLInputElement} */ (document.getElementById('display'));
     for (const button of state.buttonSection.children) {
         if (button instanceof HTMLButtonElement) {
-            /** @type {(event: MouseEvent) => any} */ let handler;
+            /** @type {() => any} */ let handler;
             switch (button.textContent) {
                 case 'CLEAR':
                     handler = () => {
@@ -50,10 +50,19 @@ function onLoad() {
                     };
                     break;
                 default:
-                    handler = () => state.numberInput.value += button.textContent;
+                    handler = () => {
+                        state.numberInput.value += button.textContent;
+                    }
                     break;
             }
-            button.addEventListener('mousedown', handler);
+            button.addEventListener('touchstart', (event) => {
+                event.preventDefault();
+                handler();
+            });
+            button.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                handler();
+            });
         }
     }
     newProblem();
