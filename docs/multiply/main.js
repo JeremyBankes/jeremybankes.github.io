@@ -53,7 +53,7 @@ function onLoad() {
                     handler = () => state.numberInput.value += button.textContent;
                     break;
             }
-            button.addEventListener('click', handler);
+            button.addEventListener('mousedown', handler);
         }
     }
     newProblem();
@@ -66,7 +66,7 @@ function onLoad() {
         }
     };
 
-    state.fullScreenButton.onclick = () => {
+    state.fullScreenButton.onmousedown = () => {
         if (document.fullscreenElement === null) {
             state.fullScreenButton.textContent = 'Enter Fullscreen';
             document.body.requestFullscreen();
